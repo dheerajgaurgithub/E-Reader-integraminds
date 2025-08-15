@@ -62,7 +62,17 @@ def create_app():
     # Health check endpoint
     @app.route('/api/health', methods=['GET'])
     def health_check():
-        return jsonify({'status': 'healthy', 'message': 'E-Reader API is running'}), 200
+        return jsonify({
+            'status': 'healthy',
+            'message': 'E-Reader API is running',
+            'deployment': {
+                'status': 'success',
+                'timestamp': '2025-08-15T07:57:26+05:30',
+                'message': 'Successfully deployed to Render',
+                'version': '1.0.0',
+                'environment': os.getenv('FLASK_ENV', 'production')
+            }
+        }), 200
     
     return app
 

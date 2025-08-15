@@ -34,6 +34,8 @@ services:
         source: /
         destination: /index.html
     plan: free
+    customDomains:
+      - name: e-reader-integraminds.onrender.com
 
 databases:
   - name: mongodb
