@@ -78,6 +78,62 @@ def create_app():
 
 app = create_app()
 
+# Root route
+@app.route('/')
+def root():
+    return '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>E-Reader API</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 2rem;
+                color: #333;
+            }
+            h1 { color: #2c3e50; }
+            .endpoint {
+                background: #f8f9fa;
+                padding: 1rem;
+                border-radius: 5px;
+                margin: 1rem 0;
+                font-family: monospace;
+            }
+            .success { color: #2ecc71; }
+        </style>
+    </head>
+    <body>
+        <h1>E-Reader API</h1>
+        <p>Welcome to the E-Reader API service. The API is up and running!</p>
+        
+        <h2>Available Endpoints:</h2>
+        
+        <div class="endpoint">
+            <strong>GET /api/health</strong> - Check API status
+            <div><a href="/api/health" target="_blank">Try it</a></div>
+        </div>
+        
+        <div class="endpoint">
+            <strong>POST /api/auth/register</strong> - Register a new user
+        </div>
+        
+        <div class="endpoint">
+            <strong>POST /api/auth/login</strong> - User login
+        </div>
+        
+        <div class="endpoint">
+            <strong>GET /api/books</strong> - Get all books
+        </div>
+        
+        <p class="success">✓ API Service is running</p>
+    </body>
+    </html>
+    '''
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
