@@ -22,43 +22,25 @@ def create_app():
     # Initialize extensions
     jwt = JWTManager(app)
     
-    # Configure CORS based on environment
-    allowed_origins = os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000,http://localhost:3002,https://e-reader-integraminds-figg.vercel.app').split(',')
-    
-    # Add CORS middleware
+    # Enable CORS for all routes
     @app.after_request
     def after_request(response):
-        origin = request.headers.get('Origin')
-        if origin in allowed_origins:
-            response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers.add('Access-Control-Allow-Origin', 'https://e-reader-integraminds-figg.vercel.app')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
         return response
     
-    # Handle OPTIONS method for preflight
+    # Handle preflight requests
     @app.before_request
     def handle_preflight():
-        if request.method == "OPTIONS":
+        if request.method == 'OPTIONS':
             response = jsonify({"status": "preflight"})
-            response.status_code = 200
-            return response
-    
-    # Initialize CORS
-    CORS(
-        app,
-        resources={
-            r"/*": {
-                "origins": allowed_origins,
-                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-                "allow_headers": ["Content-Type", "Authorization"],
-                "expose_headers": ["Content-Type", "Authorization"],
-                "supports_credentials": True,
-                "max_age": 600  # 10 minutes
-            }
-        },
-        supports_credentials=True
-    )
+            response.headers.add('Access-Control-Allow-Origin', 'https://e-reader-integraminds-figg.vercel.app')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response, 200
     
     # Register blueprints
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
