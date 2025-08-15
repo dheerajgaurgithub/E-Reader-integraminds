@@ -22,24 +22,35 @@ def create_app():
     # Initialize extensions
     jwt = JWTManager(app)
     
-    # Enable CORS for all routes
+    # Configure CORS
+    allowed_origins = [
+        'https://e-reader-integraminds-figg.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:5000'
+    ]
+    
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Origin', 'https://e-reader-integraminds-figg.vercel.app')
+        origin = request.headers.get('Origin')
+        if origin in allowed_origins:
+            response.headers.add('Access-Control-Allow-Origin', origin)
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
         response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers.add('Vary', 'Origin')
         return response
     
-    # Handle preflight requests
     @app.before_request
     def handle_preflight():
         if request.method == 'OPTIONS':
             response = jsonify({"status": "preflight"})
-            response.headers.add('Access-Control-Allow-Origin', 'https://e-reader-integraminds-figg.vercel.app')
+            origin = request.headers.get('Origin')
+            if origin in allowed_origins:
+                response.headers.add('Access-Control-Allow-Origin', origin)
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
             response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
             response.headers.add('Access-Control-Allow-Credentials', 'true')
+            response.headers.add('Vary', 'Origin')
             return response, 200
     
     # Register blueprints
