@@ -22,35 +22,33 @@ def create_app():
     # Initialize extensions
     jwt = JWTManager(app)
     
-    # Configure CORS
-    allowed_origins = [
-        'https://e-reader-integraminds-figg.vercel.app',
-        'http://localhost:3000',
-        'http://localhost:5000'
-    ]
+    # Configure CORS using Flask-CORS with specific settings
+    from flask_cors import CORS
     
-    @app.after_request
-    def after_request(response):
-        origin = request.headers.get('Origin')
-        if origin in allowed_origins:
-            response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        response.headers.add('Vary', 'Origin')
-        return response
+    CORS(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": [
+                    "https://e-reader-integraminds-figg.vercel.app",
+                    "http://localhost:3000",
+                    "http://localhost:5000"
+                ],
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": ["Content-Type", "Authorization"],
+                "supports_credentials": True,
+                "vary_header": True
+            }
+        },
+        supports_credentials=True
+    )
     
+    # Add a simple CORS preflight handler
     @app.before_request
     def handle_preflight():
         if request.method == 'OPTIONS':
             response = jsonify({"status": "preflight"})
-            origin = request.headers.get('Origin')
-            if origin in allowed_origins:
-                response.headers.add('Access-Control-Allow-Origin', origin)
-            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-            response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
-            response.headers.add('Vary', 'Origin')
+            response.headers.add('Access-Control-Max-Age', '600')
             return response, 200
     
     # Register blueprints
